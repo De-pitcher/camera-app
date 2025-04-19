@@ -31,9 +31,10 @@ def main():
 
     try:
         serve(app, host=host, port=port)
+        # app.run(host=host, port=port, debug=True)
     except Exception as e:
         logger.error(f"Error starting server: {e}")
-        camera.release()
+        # camera.release()
         sys.exit(1)
 
 if __name__ == "__main__":

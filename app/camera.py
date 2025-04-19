@@ -11,6 +11,12 @@ def init_camera():
     camera = cv2.VideoCapture(0)
 
 def generate_frames():
+    global camera
+
+    if camera is None or not camera.isOpened():
+        logging.info("Camera not initialized or closed. Reinitializing...")
+        init_camera()
+
     while True:
         success, frame = camera.read()
         if not success:
