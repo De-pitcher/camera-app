@@ -1,8 +1,5 @@
-import logging, socket, time, threading, os, sys
+import logging, socket, time, os
 import psutil
-from flask import jsonify
-from app.camera import camera
-
 
 def get_host_ip():
     try:
@@ -13,14 +10,6 @@ def get_host_ip():
         return ip
     except Exception:
         return "127.0.0.1"
-
-def shutdown_server():
-    if camera and camera.isOpened():
-        logging.info("Shutting down...")
-        camera.release()
-    # Use a new thread to delay and exit the process completely
-    threading.Thread(target=lambda: (time.sleep(1), os._exit(0))).start()
-    return jsonify({"message": "Server shutting down..."})
 
 def find_available_port(start_port, host):
     port = start_port

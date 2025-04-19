@@ -1,7 +1,7 @@
 from flask import Response, jsonify, send_file, request
-from app.camera import generate_frames, capture_image, IMAGE_PATH
-from app.utils import get_host_ip, shutdown_server
 import os
+
+from app.camera import generate_frames, capture_image,shutdown_camera, shutdown_server, IMAGE_PATH
 
 def init_routes(app):
 
@@ -26,6 +26,13 @@ def init_routes(app):
     @app.route('/health')
     def health():
         return {'status': 'healthy'}, 200
+    
+    @app.route('/shutdown-camera', methods=['POST'])
+    def shutdown_camera_route():
+        if shutdown_camera():
+            return jsonify({"message": "Camera shut down successfully."})
+        return jsonify({"message": "Camera was not active."}), 400
+
 
     @app.route('/shutdown', methods=['POST'])
     def shutdown():
