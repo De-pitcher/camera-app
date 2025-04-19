@@ -2,4 +2,5 @@
 build
 dist
 test.py
-camera_server.spec
+app/logs/
+*.spec

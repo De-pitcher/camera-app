@@ -18,7 +18,8 @@ def shutdown_server():
     if camera and camera.isOpened():
         logging.info("Shutting down...")
         camera.release()
-        threading.Thread(target=lambda: (time.sleep(1), sys.exit(0))).start()
+    # Use a new thread to delay and exit the process completely
+    threading.Thread(target=lambda: (time.sleep(1), os._exit(0))).start()
     return jsonify({"message": "Server shutting down..."})
 
 def find_available_port(start_port, host):
