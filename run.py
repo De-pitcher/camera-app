@@ -1,9 +1,8 @@
 import argparse
-from app import create_app, camera
-from app.utils import get_host_ip, find_available_port, monitor_parent_process
+from app import create_app
+from app.utils import get_host_ip, monitor_parent_process
 from app.logging_config import setup_logging
 import threading
-import os
 import sys
 import logging
 from waitress import serve

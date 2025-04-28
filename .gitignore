@@ -4,3 +4,4 @@ dist
 test.py
 app/logs/
 *.spec
+app/__pycache__

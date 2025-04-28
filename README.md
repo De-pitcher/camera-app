@@ -73,6 +73,11 @@ pip install pyinstaller
 pyinstaller --onefile run.py
 ```
 
+for windows 11
+```bash
+python patch.py && pyinstaller --noconsole --onefile --manifest manifest.xml run.py 
+```
+
 3. The executable will be in the `dist` folder. Run it with:
 ```bash
 ./dist/run
