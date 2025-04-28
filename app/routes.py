@@ -7,7 +7,7 @@ def init_routes(app):
 
     @app.route("/video_feed")
     def video_feed():
-        return Response(generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
+        return Response(generate_frames(), content_type="multipart/x-mixed-replace;boundary=frame")
 
     @app.route('/capture', methods=['POST'])
     def capture():

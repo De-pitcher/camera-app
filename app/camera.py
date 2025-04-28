@@ -82,7 +82,7 @@ def generate_frames():
                     continue
 
             _, buffer = cv2.imencode('.jpg', frame)
-            yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+            yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n\r\n')
     finally:
         active_streams -= 1
         if active_streams == 0:
