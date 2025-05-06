@@ -5,3 +5,4 @@ test.py
 app/logs/
 *.spec
 app/__pycache__
+flask_camera_server.lock
