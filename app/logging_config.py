@@ -38,42 +38,93 @@ import io
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+# def setup_logging():
+#     # Ensure stdout uses UTF-8 to support Unicode output (e.g., emojis)
+#     if sys.stdout.encoding.lower() != 'utf-8':
+#         sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+#         sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
+#     # Use a user-writable directory for logs
+#     if sys.platform == "win32":
+#         base_log_dir = os.getenv("LOCALAPPDATA", os.path.expanduser("~\\AppData\\Local"))
+#     elif sys.platform == "darwin":
+#         base_log_dir = os.path.expanduser("~/Library/Logs")
+#     else:
+#         base_log_dir = os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
+
+#     log_folder = os.path.join(base_log_dir, "ClockInApp", "logs")
+#     os.makedirs(log_folder, exist_ok=True)
+#     log_file = os.path.join(log_folder, "camera_server.log")
+
+#     # Optional: clear previous log contents
+#     open(log_file, 'w', encoding='utf-8').close()
+
+#     # Get the root logger and clear existing handlers
+#     logger = logging.getLogger()
+#     logger.setLevel(logging.INFO)
+#     logger.handlers.clear()
+
+#     # File handler with UTF-8 encoding
+#     file_handler = RotatingFileHandler(log_file, maxBytes=5 * 1024 * 1024, backupCount=3, encoding='utf-8')
+#     file_formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+#     file_handler.setFormatter(file_formatter)
+#     logger.addHandler(file_handler)
+
+#     # Console handler
+#     stream_handler = logging.StreamHandler(sys.stdout)
+#     stream_handler.setFormatter(file_formatter)
+#     logger.addHandler(stream_handler)
+
+#     logger.info("Logging setup complete.")
+#     logger.info(f"Logs are being written to: {log_file}")
+
 def setup_logging():
-    # Ensure stdout uses UTF-8 to support Unicode output (e.g., emojis)
-    if sys.stdout.encoding.lower() != 'utf-8':
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+    try:
+        if sys.stdout.encoding is None or sys.stdout.encoding.lower() != 'utf-8':
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+    except Exception as e:
+        print(f"[Logging Setup] Could not wrap stdout: {e}")
 
-    # Use a user-writable directory for logs
-    if sys.platform == "win32":
-        base_log_dir = os.getenv("LOCALAPPDATA", os.path.expanduser("~\\AppData\\Local"))
-    elif sys.platform == "darwin":
-        base_log_dir = os.path.expanduser("~/Library/Logs")
-    else:
-        base_log_dir = os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
+    # Choose log directory
+    try:
+        if sys.platform == "win32":
+            base_log_dir = os.getenv("LOCALAPPDATA", os.path.expanduser("~\\AppData\\Local"))
+        elif sys.platform == "darwin":
+            base_log_dir = os.path.expanduser("~/Library/Logs")
+        else:
+            base_log_dir = os.getenv("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
 
-    log_folder = os.path.join(base_log_dir, "ClockInApp", "logs")
-    os.makedirs(log_folder, exist_ok=True)
-    log_file = os.path.join(log_folder, "camera_server.log")
+        log_folder = os.path.join(base_log_dir, "ClockInApp", "logs")
+        os.makedirs(log_folder, exist_ok=True)
+        log_file = os.path.join(log_folder, "camera_server.log")
+    except Exception as e:
+        print(f"[Logging Setup] Could not create log folder: {e}")
+        log_file = None
 
-    # Optional: clear previous log contents
-    open(log_file, 'w', encoding='utf-8').close()
-
-    # Get the root logger and clear existing handlers
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     logger.handlers.clear()
 
-    # File handler with UTF-8 encoding
-    file_handler = RotatingFileHandler(log_file, maxBytes=5 * 1024 * 1024, backupCount=3, encoding='utf-8')
     file_formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
-    file_handler.setFormatter(file_formatter)
-    logger.addHandler(file_handler)
 
-    # Console handler
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setFormatter(file_formatter)
-    logger.addHandler(stream_handler)
+    if log_file:
+        try:
+            open(log_file, 'w', encoding='utf-8').close()
+            file_handler = RotatingFileHandler(log_file, maxBytes=5 * 1024 * 1024, backupCount=3, encoding='utf-8')
+            file_handler.setFormatter(file_formatter)
+            logger.addHandler(file_handler)
+        except Exception as e:
+            print(f"[Logging Setup] Could not set up file handler: {e}")
+
+    # Console logging fallback
+    try:
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(file_formatter)
+        logger.addHandler(stream_handler)
+    except Exception as e:
+        print(f"[Logging Setup] Could not set up console logging: {e}")
 
     logger.info("Logging setup complete.")
-    logger.info(f"Logs are being written to: {log_file}")
+    if log_file:
+        logger.info(f"Logs are being written to: {log_file}")
